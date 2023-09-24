@@ -1,13 +1,33 @@
+<?php
+session_start();
+
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
+    header("Location: login.html");
+    exit;
+}
+
+$host = 'localhost';
+$db   = 'kontakt';
+$user = 'root';
+$pass = '';
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$pdo = new PDO($dsn, $user, $pass);
+
+$stmt = $pdo->prepare("SELECT * FROM contact_form");
+$stmt->execute();
+$messages = $stmt->fetchAll();
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="keywords" content="Bestattungsunternehmen, Bestattungsdienst, Trauerbegleitung, Vollbüttel, Beerdigung, Erdbestattung, Feuerbestattung, Bestattungsvorsorge">
-    <meta name="description" content="Das Bestattungsunternehmen Adam Bestattungen in Vollbüttel bietet eine respektvolle und individuelle Betreuung in schweren Zeiten. Jahrelange Erfahrung und Verständnis für Ihre Bedürfnisse.">
     <title>Adam Bestattungen</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
     <script src="https://kit.fontawesome.com/9fc0d00d3a.js" crossorigin="anonymous"></script>
 </head>
 
@@ -16,7 +36,7 @@
     <!-- Header with Flexbox -->
     <header>
         <div class="container flex-header">
-            <img src="media/logo.png" alt="Logo" id="header-image">
+            <img src="../media/logo.png" alt="Logo" id="header-image">
         </div>
     </header>
 
@@ -26,16 +46,34 @@
             <div class="container flex-nav">
                 <ul class="nav-list">
                     <li><a href="index.html" style="color: #000;">Home</a></li>
-                    <li><a href="dienstleistungen.html" style="color: #000;">Dienstleistungen</a></li>
-                    <li><a href="urnen.html" style="color: #000;" class="active">S&auml;rge / Urnen</a></li>
-                    <li><a href="einzugsgebiet.html" style="color: #000;">Einzugsgebiet</a></li>
-                    <li><a href="kontakt.html" style="color: #000;">Kontakt</a></li>
+                    <li><a href="../dienstleistungen.html" style="color: #000;">Dienstleistungen</a></li>
+                    <li><a href="../urnen.html" style="color: #000;">S&auml;rge / Urnen</a></li>
+                    <li><a href="../einzugsgebiet.html" style="color: #000;">Einzugsgebiet</a></li>
+                    <li><a href="../kontakt.html" style="color: #000;">Kontakt</a></li>
                 </ul>
             </div>
         </aside>
         <section class="main-content">
-            <h2>Bestattungen </h2>
-            <p></span></br>Der Friedhof erfüllt eine wichtige Funktion, den Hinterbliebenen nach der Beisetzung einen Ort der Erinnerung zu bieten. Bei einer Beerdigung sind viele organisatorische Aspekte zu berücksichtigen, wie z.B. die Auswahl eines Sarges oder einer Urne. </span></br></span></br>Trotz der Schwere dieses Themas stehe ich Ihnen einfühlsam zur Seite, um Ihre individuellen Wünsche sensibel umzusetzen. Gemeinsam werden wir diesen Weg zu beschreiten, um Ihren geliebten Angehörigen eine würdige und angenehme Umgebung für seine letzte Ruhestätte zu geben.</p>
+        <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Nachricht</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($messages as $message): ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($message["Name"]); ?></td>
+                    <td><?php echo htmlspecialchars($message["Email"]); ?></td>
+                    <td><?php echo htmlspecialchars($message["Phone"]); ?></td>
+                    <td><?php echo htmlspecialchars($message["Message"]); ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+         </table>
         </section>
     </div>
 
@@ -62,3 +100,4 @@
 </body>
 
 </html>
+
